@@ -121,8 +121,12 @@ public class BloqueA {
 	 * retorne el resultado de particionar el conjunto de palabras que comienzan por
 	 * esa letra, separando las de longitud par de las de longitud impar.
 	 */
-	public void ejercicio8() {
-
+	public static void ejercicio8(Stream<String> secuencia, char letra) {
+		secuencia
+		.filter(s -> s.charAt(0)==letra)
+		.collect(Collectors.partitioningBy(s -> s.length() % 2 == 2))
+		.forEach((k, v) -> System.out.println(v)); 
+		//¿Por qué no me deja hacer String::length ?
 	}
 
 	/*
