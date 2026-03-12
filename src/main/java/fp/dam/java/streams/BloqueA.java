@@ -2,6 +2,9 @@ package fp.dam.java.streams;
 
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -12,7 +15,22 @@ public class BloqueA {
 	 * lengua española.
 	 */
 	public static void main(String[] args) {
-		ejercicio1(Datos.getPalabras());
+		//ejercicio1(Datos.getPalabras());
+		/*ejercicio2(Datos.getPalabras())
+				.forEach((k,v) -> {
+					System.out.printf("Secuencia de clave %s\n",k);
+					for(String s: v) {
+						System.out.println(s);
+					}
+					System.out.println();
+				});*/
+		/*ejercicio4(Datos.getPalabras())
+			.forEach((k,v) -> {
+				System.out.printf("%s: %d\n", k, v);
+			});*/
+		
+		ejercicio6(Datos.getPalabras())
+			.forEach((k,v) -> System.out.printf("%d: %d\n", k,v));
 	}
 
 	/*
@@ -31,8 +49,10 @@ public class BloqueA {
 	 * resultado de agrupar las palabras de longitud mayor que 3 que comiencen por
 	 * los mismos 3 caracteres.
 	 */
-	public static void ejercicio2(Stream<String> secuencia) {
-		
+	public static Map<Object, Set<String>> ejercicio2(Stream<String> secuencia) {
+		return secuencia
+		.filter(s-> s.length()>3) //Simplemente no se puede invocar String::length
+		.collect(Collectors.groupingBy(s->s.substring(0, 3), Collectors.toSet())); //grouping by agrupa elementos según el valor retornado por la función
 	}
 
 	/*
@@ -69,8 +89,22 @@ public class BloqueA {
 	 * la 'z' (minúsculas). Las vocales con tilde se considerarán como vocales sin
 	 * tilde.
 	 */
-	public void ejercicio4() {
-
+	public static Map<String, Long> ejercicio4(Stream<String> secuencia) {
+		return secuencia
+				.collect(Collectors.groupingBy(s -> s
+											.toLowerCase()
+											.substring(0,1)
+											.transform(s2 ->  {
+														switch(s2) {
+															case "á": return "a";
+															case "é": return "e";
+															case "í": return "i";
+															case "ó": return "o";
+															case "ú": return "u";
+															default: return s2;
+														}
+													}
+											),Collectors.counting()));
 	}
 
 	/*
@@ -88,8 +122,9 @@ public class BloqueA {
 	 * 6. Crea un método estático que acepte una secuencia de palabras y retorne el
 	 * número de palabras de cada longitud presente en la secuencia.
 	 */
-	public void ejercicio6() {
-
+	public static Map<Integer, Long> ejercicio6(Stream<String> secuencia) {
+		return secuencia
+				.collect(Collectors.groupingBy(String::length, Collectors.counting()));
 	}
 
 	/*
@@ -126,7 +161,8 @@ public class BloqueA {
 		.filter(s -> s.charAt(0)==letra)
 		.collect(Collectors.partitioningBy(s -> s.length() % 2 == 2))
 		.forEach((k, v) -> System.out.println(v)); 
-		//¿Por qué no me deja hacer String::length ?
+		//¿Por qué no me deja hacer String::length ? 
+		//Igual es porque solo se puede cuando es lo único dentro de los paréntesis
 	}
 
 	/*
@@ -135,8 +171,12 @@ public class BloqueA {
 	 * están contenidas en otras palabras. Se descartarán todos los casos de
 	 * palabras contenidas en ellas mismas.
 	 */
-	public void ejercicio9() {
-
+	public List<String> ejercicio9(Stream<String> secuencia, int len) {
+		if(len<3)
+			throw new IllegalArgumentException();
+		return secuencia
+				.filter(s -> s.length() == len)
+				.
 	}
 
 	/*
