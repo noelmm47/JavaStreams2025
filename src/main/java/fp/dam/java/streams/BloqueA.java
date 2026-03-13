@@ -1,6 +1,8 @@
 package fp.dam.java.streams;
 
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -111,11 +113,15 @@ public class BloqueA {
 	 * 5. Crea un método estático que acepte una secuencia de palabras y retorne la
 	 * longitud de la palabra o palabras mas largas.
 	 */
-	public int ejercicio5(Stream<String> secuencia) {
-		return secuencia
+	public /*int*/ List<String> ejercicio5(Stream<String> secuencia) {
+		/*return secuencia
 				.mapToInt(String::length) //convertimos los strings en sus longitudes
 				.max()
-				.orElse(-1);
+				.orElse(-1);*/
+		
+		return secuencia
+				.flatMap(s -> Arrays.stream(s.split("\\p{L}+|\\P{L}")))
+				.toList();
 	}
 
 	/*
@@ -175,8 +181,16 @@ public class BloqueA {
 		if(len<3)
 			throw new IllegalArgumentException();
 		return secuencia
-				.filter(s -> s.length() == len)
-				.
+				//filtrar substrings que coincidan con otras palabras
+				.map((s) -> {
+					Set<String> set= new HashSet<String>();
+					for(int i=0; i<s.length(); i++) {
+						for(int j=i+2; j<s.length(); j++)
+							set.add(s.substring(i, j));
+					}
+					return set;
+				})
+				.filter(s -> s.length() == len);
 	}
 
 	/*
