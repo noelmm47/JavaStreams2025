@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -76,11 +76,13 @@ public class BloqueB {
 	 * de palabras que se repiten.
 	 */
 	
-	static void ejercicio06(Stream<String> secuencia) {
-		secuencia
-				.map(s -> pattern.matcher(s).results()
-											.map(r -> r.group())) //Importante para mapear de MatchResult a String
-				.
+	static Set<String> ejercicio06(Stream<String> secuencia) {
+		List<String> lista = secuencia.toList();
+		
+		return secuencia
+				.collect(Collectors.partitioningBy(s -> lista.stream().anyMatch(s2 -> s2.equals(s)), 
+													Collectors.toCollection(TreeSet::new)))
+				.get(true);
 	}
 	
 	
@@ -109,9 +111,9 @@ public class BloqueB {
 	 */
 	static long ejercicio09(Stream<String> secuencia) {
 		return secuencia
-				.mapToLong(s -> pattern.matcher(s).results().map(r->r.group()).distinct().count())
-				.reduce((l1,l2) -> l1+l2 )
-				.orElse(-1);
+				.map(s -> pattern.matcher(s).results().map(r->r.group()))
+				.distinct()
+				.count();
 	}
 	
 	

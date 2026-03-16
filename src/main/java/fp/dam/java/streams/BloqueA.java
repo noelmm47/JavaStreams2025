@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -16,6 +17,7 @@ public class BloqueA {
 	 * Datos.getPalabras(), que retorna una secuencia con todas las palabras de la
 	 * lengua española.
 	 */
+	private static Pattern pattern = Pattern.compile("\\p{L}+|\\P{L}+");
 	public static void main(String[] args) {
 		//ejercicio1(Datos.getPalabras());
 		/*ejercicio2(Datos.getPalabras())
@@ -31,8 +33,11 @@ public class BloqueA {
 				System.out.printf("%s: %d\n", k, v);
 			});*/
 		
-		ejercicio6(Datos.getPalabras())
-			.forEach((k,v) -> System.out.printf("%d: %d\n", k,v));
+		//ejercicio6(Datos.getPalabras())
+			//.forEach((k,v) -> System.out.printf("%d: %d\n", k,v));
+		
+		ejercicio9(Datos.getPalabras(), 3)
+		.forEach(System.out::println);
 	}
 
 	/*
@@ -177,20 +182,15 @@ public class BloqueA {
 	 * están contenidas en otras palabras. Se descartarán todos los casos de
 	 * palabras contenidas en ellas mismas.
 	 */
-	public List<String> ejercicio9(Stream<String> secuencia, int len) {
+	public static List<String> ejercicio9(Stream<String> secuencia, int len) {
 		if(len<3)
 			throw new IllegalArgumentException();
-		return secuencia
-				//filtrar substrings que coincidan con otras palabras
-				.map((s) -> {
-					Set<String> set= new HashSet<String>();
-					for(int i=0; i<s.length(); i++) {
-						for(int j=i+2; j<s.length(); j++)
-							set.add(s.substring(i, j));
-					}
-					return set;
-				})
-				.filter(s -> s.length() == len);
+		List<String> palabras= secuencia.toList();
+		return palabras.stream()
+				.filter(s -> s.length() == len)
+				.filter(s -> palabras.stream()
+									 .anyMatch(sup -> !sup.equals(s) && sup.contains(s)))
+				.toList();
 	}
 
 	/*
@@ -199,8 +199,16 @@ public class BloqueA {
 	 * esa longitud con la lista de palabras en las que está contenida. Se
 	 * descartarán todos los casos de palabras contenidas en ellas mismas.
 	 */
-	public void ejercicio10() {
-
+	public static Map<Object, List<String>> ejercicio10(Stream<String> secuencia, int len) {
+		if(len < 3)
+			throw new IllegalArgumentException();
+		
+		List<String> lista = secuencia
+							.toList();
+		return lista.stream()
+				.filter(s -> s.length()==len)
+				.collect(Collectors.groupingBy(sub -> lista.stream()
+								.anyMatch(sup -> !sup.equals(sub) && sup.contains(sub))));
 	}
 
 	/*
